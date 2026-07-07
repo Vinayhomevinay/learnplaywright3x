@@ -1,6 +1,10 @@
 # LearnPlaywright3x
 
+Access token: 
 
+glpat-ilAQNJ6-gtpRz3pFb2tstmM6MQpvOjEKdTpudmJsaA8.01.170ad14fq: project token
+
+glpat-JzZD0UahOz-eOB8p_kwXeWM6MQpvOjEKdTo1eXdqcA8.01.170x3frvm : user token
 
 ## Getting started
 
