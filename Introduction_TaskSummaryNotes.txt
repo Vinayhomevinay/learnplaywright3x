@@ -1,0 +1,32 @@
+
+Learning_Playwright3x:
+Day1:
+AI koi use kar leta hu :github copilot,command code,- Free githubcopilot 
+
+Code runner - extension
+ Free github copilot 
+ 
+Install zoom exe mil gaya hai usi mein set up kar denge:
+
+->Reasearch,Practice,upload to github.com
+
+ek baar wo anti hallucination 
+
+
+Day 2:
+RICE POT
+
+Important key difference we learn about prompt engineering and loop engineering:
+
+Task:
+Test Plan 
+Test case prompt 
+
+'##############################################################################################
+Day3: Task
+Installation setup etc needs to be done and shared in the gitlab
+
+
+
+
+
