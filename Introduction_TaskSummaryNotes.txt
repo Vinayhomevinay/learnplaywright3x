@@ -25,7 +25,14 @@ Test case prompt
 '##############################################################################################
 Day3: Task
 Installation setup etc needs to be done and shared in the gitlab
+'#####################
+Github links:
 
+https://courses.thetestingacademy.com/courses/learn-git-basics-in-less-than-2-hours/dashboard
+
+Pwd:Tango@2729121990
+
+Command Code ka jugaad: Set-ExecutionPolicy -ExecutionPolicy RemoteSigned-Scope CurrentUser
 
 
 
