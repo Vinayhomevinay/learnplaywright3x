@@ -43,6 +43,12 @@ https://github.com/PramodDutta/LearningPlaywright3x
 
 '##########Day 4 and 5##########################
 
+Basic Git commands to push the code :
+Go to the folder where the file is available
+git add <FileName>
+git commit -m "your comments"
+git push origin main 
 
+Note: There are lot of other git commands as well which is needed to be studied
 
 
