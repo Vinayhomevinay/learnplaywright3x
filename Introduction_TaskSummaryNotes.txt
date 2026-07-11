@@ -1,5 +1,6 @@
 
 Learning_Playwright3x:
+'####################################################################
 Day1:
 AI koi use kar leta hu :github copilot,command code,- Free githubcopilot 
 
@@ -14,7 +15,7 @@ ek baar wo anti hallucination
 
 
 Day 2:
-RICE POT
+RICE POT- Prompt Task
 
 Important key difference we learn about prompt engineering and loop engineering:
 
@@ -22,17 +23,25 @@ Task:
 Test Plan 
 Test case prompt 
 
+Note- It was done on gitlab project so pull those here
+
 '##############################################################################################
 Day3: Task
-Installation setup etc needs to be done and shared in the gitlab
+Installation setup etc needs to be done and shared in the gitlab- Done
 '#####################
-Github links:
+Github Study links:
 
 https://courses.thetestingacademy.com/courses/learn-git-basics-in-less-than-2-hours/dashboard
 
 Pwd:Tango@2729121990
 
 Command Code ka jugaad: Set-ExecutionPolicy -ExecutionPolicy RemoteSigned-Scope CurrentUser
+
+###########################
+Pramod sir repository:
+https://github.com/PramodDutta/LearningPlaywright3x
+
+'##########Day 4 and 5##########################
 
 
 
