@@ -1,0 +1,40 @@
+
+
+Attach the PRD:https://drive.google.com/file/d/1v0TgSPbQzmbY39VSEzHVxvjNQ7YeiHnF/view?usp=sharing
+
+
+Attach the test case Template:https://docs.google.com/spreadsheets/d/1EH1UJ9Qezgx_aZ0xim3KcVJUCEeR7A-7/edit?usp=sharing&ouid=104755920778477387077&rtpof=true&sd=true
+
+
+Role:You are having 12 years experience as a QA tester.You are having a great understanding of writing test cases.Based on the Product Requirement Document Create test cases for the application https://app.vwo.com/
+
+
+Instruction:
+[MANDATORY]:Strictly adhere to the attached test case template
+ Create   Test cases for Functional requirements and non functional requirements with valid and invalid scenarios
+
+[CRITICAL] :Implement the attached links in the product requirement document for understanding the LLDs
+{Don't]:Dont use any key aspects of pre conditions,descriptions etc outside PRD
+[Generate]:Generate valid as well as invalid scenarios which are critical to the business
+Maintain a clear and end to end test cases and trace back the the test cases to Requirement Tracebility matrix
+ 
+
+Context:
+You are creating test cases for enterprise grade DXO and CRO Platform keeping in mind the primary users first and then secondary users as per PRD
+
+Example:
+You can use the attached template for generating test case
+
+Parameters:
+The test cases should be clear and covering all the major requirements and should not be missing any of the requirements from PRD.
+
+
+Output:
+Provide only:
+The Test case file having all the sheets as per the template 
+No additional explaination,content
+
+
+Tone:
+Should be precise,covering all the requirements,enterprise grade
+Please make the entire step by step process and ask me what you are doing and explain to me also what you are doing step by step. Make sure that you first plan everything and show me what exactly you are going to create. Then only you are going to create afterwards step by step.
