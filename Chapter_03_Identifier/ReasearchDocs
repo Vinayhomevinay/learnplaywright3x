@@ -1,0 +1,952 @@
+In JavaScript, **identifiers** and **literals** are two fundamental concepts. Understanding the difference is important because almost every JavaScript program is built using them.
+
+---
+
+# 1. What is an Identifier?
+
+An **identifier** is simply the **name** given to variables, functions, classes, objects, parameters, or other entities in JavaScript.
+
+Think of an identifier as a **label** that allows you to refer to something later.
+
+### Example
+
+```javascript
+let age = 25;
+```
+
+Here:
+
+* `age` → Identifier
+* `25` → Literal
+
+---
+
+## More Examples
+
+```javascript
+let firstName = "Vinay";
+const PI = 3.14159;
+
+function greet() {
+    console.log("Hello");
+}
+
+class Employee {}
+```
+
+Identifiers are:
+
+* `firstName`
+* `PI`
+* `greet`
+* `Employee`
+
+---
+
+# Rules for Naming Identifiers
+
+An identifier:
+
+✅ Can contain
+
+* Letters (A-Z, a-z)
+* Digits (0-9)
+* Underscore (_)
+* Dollar sign ($)
+
+```javascript
+let userName;
+let user_name;
+let $price;
+let _count;
+```
+
+---
+
+## Cannot start with a digit
+
+❌ Invalid
+
+```javascript
+let 1name;
+```
+
+✅ Correct
+
+```javascript
+let name1;
+```
+
+---
+
+## Cannot contain spaces
+
+❌
+
+```javascript
+let first name;
+```
+
+✅
+
+```javascript
+let firstName;
+```
+
+---
+
+## Cannot use reserved keywords
+
+❌
+
+```javascript
+let for = 10;
+```
+
+Because `for` is a keyword.
+
+Other reserved keywords include:
+
+```text
+if
+else
+for
+while
+class
+const
+let
+return
+switch
+import
+export
+```
+
+---
+
+## JavaScript is Case Sensitive
+
+These are different identifiers:
+
+```javascript
+let age = 20;
+let Age = 30;
+let AGE = 40;
+```
+
+All three are different variables.
+
+---
+
+# Naming Convention
+
+### Variables
+
+camelCase
+
+```javascript
+let employeeName;
+let firstName;
+let totalSalary;
+```
+
+---
+
+### Constants
+
+UPPER_SNAKE_CASE
+
+```javascript
+const MAX_SIZE = 100;
+const PI = 3.14;
+```
+
+---
+
+### Classes
+
+PascalCase
+
+```javascript
+class Student {}
+
+class EmployeeManager {}
+```
+
+---
+
+### Functions
+
+camelCase
+
+```javascript
+function calculateTotal() {}
+
+function getUser() {}
+```
+
+---
+
+# Examples of Valid Identifiers
+
+```javascript
+name
+age
+firstName
+employee1
+$user
+_total
+MAX_SIZE
+```
+
+---
+
+# Examples of Invalid Identifiers
+
+```javascript
+1name
+first-name
+first name
+for
+class
+```
+
+---
+
+# 2. What is a Literal?
+
+A **literal** is a fixed value written directly in your code.
+
+It represents the actual value itself.
+
+Example:
+
+```javascript
+let age = 25;
+```
+
+* `age` → Identifier
+* `25` → Literal
+
+---
+
+# Types of Literals in JavaScript
+
+JavaScript has several kinds of literals.
+
+---
+
+## 1. Number Literal
+
+```javascript
+10
+20
+3.14
+-15
+1000
+```
+
+Example
+
+```javascript
+let price = 499.99;
+```
+
+---
+
+## 2. String Literal
+
+Strings are enclosed in:
+
+* Single quotes
+* Double quotes
+* Backticks
+
+```javascript
+"Hello"
+
+'Hello'
+
+`Hello`
+```
+
+Example
+
+```javascript
+let city = "Delhi";
+```
+
+---
+
+## 3. Boolean Literal
+
+Only two values exist.
+
+```javascript
+true
+false
+```
+
+Example
+
+```javascript
+let isLoggedIn = true;
+```
+
+---
+
+## 4. Null Literal
+
+Represents intentional absence of value.
+
+```javascript
+null
+```
+
+Example
+
+```javascript
+let middleName = null;
+```
+
+---
+
+## 5. Undefined
+
+While `undefined` is often encountered as a value, it is **not technically a literal** in the JavaScript language grammar. It is the value of the global `undefined` property or the default value of uninitialized variables.
+
+```javascript
+let x;
+
+console.log(x);
+```
+
+Output
+
+```text
+undefined
+```
+
+---
+
+## 6. BigInt Literal
+
+Ends with **n**
+
+```javascript
+12345678901234567890n
+```
+
+Example
+
+```javascript
+let big = 9007199254740993n;
+```
+
+---
+
+## 7. Object Literal
+
+```javascript
+const person = {
+    name: "Vinay",
+    age: 35
+};
+```
+
+Here
+
+```javascript
+{
+    name: "Vinay",
+    age: 35
+}
+```
+
+is an object literal.
+
+---
+
+## 8. Array Literal
+
+```javascript
+const colors = ["Red", "Blue", "Green"];
+```
+
+`["Red", "Blue", "Green"]` is an array literal.
+
+---
+
+## 9. Regular Expression Literal
+
+```javascript
+const pattern = /abc/;
+```
+
+Another example
+
+```javascript
+const email = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+```
+
+---
+
+## 10. Template Literal
+
+Uses backticks.
+
+```javascript
+let name = "Vinay";
+
+console.log(`Hello ${name}`);
+```
+
+Output
+
+```text
+Hello Vinay
+```
+
+Template literals support:
+
+* Variable interpolation
+* Multi-line strings
+* Expression evaluation
+
+Example
+
+```javascript
+let a = 10;
+let b = 20;
+
+console.log(`${a + b}`);
+```
+
+Output
+
+```text
+30
+```
+
+---
+
+# Identifier vs Literal
+
+| Feature     | Identifier                                                   | Literal                     |
+| ----------- | ------------------------------------------------------------ | --------------------------- |
+| Meaning     | Name of a variable, function, class, etc.                    | Actual fixed value          |
+| Can change? | Refers to a value that may change (depending on declaration) | Represents the value itself |
+| Example     | `age`                                                        | `25`                        |
+| Example     | `studentName`                                                | `"Vinay"`                   |
+| Example     | `isAdmin`                                                    | `true`                      |
+| Used for    | Naming entities                                              | Supplying values            |
+
+---
+
+# Real-World Example
+
+```javascript
+const employeeName = "Vinay";
+const age = 35;
+const isMarried = true;
+
+const employee = {
+    name: employeeName,
+    age: age
+};
+```
+
+### Identifiers
+
+* `employeeName`
+* `age`
+* `isMarried`
+* `employee`
+* `name`
+
+### Literals
+
+* `"Vinay"` (string literal)
+* `35` (number literal)
+* `true` (boolean literal)
+* `{ name: employeeName, age: age }` (object literal)
+
+---
+
+# Quick Memory Trick
+
+* **Identifier = Name** (the label you give to something)
+* **Literal = Value** (the actual value written in the code)
+
+Example:
+
+```javascript
+let score = 100;
+```
+
+* `score` → **Identifier**
+* `100` → **Literal**
+
+Keeping this distinction in mind will help you read and write JavaScript more confidently, since identifiers let you refer to data, while literals are the data values themselves.
+
+Reaserch 2:
+`null` and `undefined` are among the most commonly confused concepts in JavaScript. Although both represent the absence of a value, they are used in different situations and have different behaviors.
+
+---
+
+# Null vs Undefined in JavaScript
+
+| Feature                 | `null`                         | `undefined`                       |
+| ----------------------- | ------------------------------ | --------------------------------- |
+| Meaning                 | Intentional absence of a value | Value not yet assigned or missing |
+| Assigned by             | Programmer                     | JavaScript engine (usually)       |
+| Type (`typeof`)         | `"object"` *(historical bug)*  | `"undefined"`                     |
+| Value                   | Explicit empty value           | Default uninitialized value       |
+| Equality (`==`)         | Equal to `undefined`           | Equal to `null`                   |
+| Strict Equality (`===`) | Not equal to `undefined`       | Not equal to `null`               |
+
+---
+
+# What is `undefined`?
+
+`undefined` means **a variable exists, but it has not been assigned a value yet**, or a requested value does not exist.
+
+JavaScript automatically assigns `undefined` in many situations.
+
+## Example 1: Variable Declared but Not Assigned
+
+```javascript
+let age;
+
+console.log(age);
+```
+
+Output
+
+```text
+undefined
+```
+
+Explanation:
+
+* Variable `age` exists.
+* No value has been assigned.
+* JavaScript automatically gives it `undefined`.
+
+---
+
+## Example 2: Missing Object Property
+
+```javascript
+const person = {
+    name: "Vinay"
+};
+
+console.log(person.age);
+```
+
+Output
+
+```text
+undefined
+```
+
+Because the property `age` does not exist.
+
+---
+
+## Example 3: Function Without a Return
+
+```javascript
+function greet() {
+    console.log("Hello");
+}
+
+let result = greet();
+
+console.log(result);
+```
+
+Output
+
+```text
+Hello
+undefined
+```
+
+Since no value is returned, JavaScript returns `undefined`.
+
+---
+
+## Example 4: Missing Function Argument
+
+```javascript
+function display(name) {
+    console.log(name);
+}
+
+display();
+```
+
+Output
+
+```text
+undefined
+```
+
+No argument was passed.
+
+---
+
+## Example 5: Array Index Doesn't Exist
+
+```javascript
+const numbers = [10, 20];
+
+console.log(numbers[5]);
+```
+
+Output
+
+```text
+undefined
+```
+
+---
+
+# What is `null`?
+
+`null` means **there is intentionally no value**.
+
+Unlike `undefined`, `null` is assigned by the programmer to indicate "empty" or "no object".
+
+## Example
+
+```javascript
+let user = null;
+
+console.log(user);
+```
+
+Output
+
+```text
+null
+```
+
+Meaning:
+
+> "The variable exists, but it intentionally has no value."
+
+---
+
+## Real-world Example
+
+Imagine a website where a user has not uploaded a profile picture.
+
+```javascript
+const profile = {
+    name: "Vinay",
+    photo: null
+};
+```
+
+`photo` is deliberately set to `null` to indicate that there is currently no photo.
+
+---
+
+# When Does JavaScript Produce `undefined`?
+
+JavaScript commonly produces `undefined` in these cases:
+
+| Situation                             | Result      |
+| ------------------------------------- | ----------- |
+| Variable declared but not initialized | `undefined` |
+| Missing object property               | `undefined` |
+| Missing array element                 | `undefined` |
+| Function with no return               | `undefined` |
+| Missing function parameter            | `undefined` |
+
+---
+
+# When Should You Use `null`?
+
+Use `null` when you intentionally want to represent "no value."
+
+Examples:
+
+```javascript
+let selectedUser = null;
+let currentSession = null;
+let profilePicture = null;
+```
+
+---
+
+# Type Comparison
+
+```javascript
+console.log(typeof undefined);
+console.log(typeof null);
+```
+
+Output
+
+```text
+undefined
+object
+```
+
+### Why is `typeof null` `"object"`?
+
+This is a historical bug from the earliest days of JavaScript. It has been kept for backward compatibility, so although `null` is a primitive value, `typeof null` still returns `"object"`.
+
+---
+
+# Equality Comparison
+
+## Loose Equality (`==`)
+
+```javascript
+console.log(null == undefined);
+```
+
+Output
+
+```text
+true
+```
+
+Because loose equality treats them as equivalent.
+
+---
+
+## Strict Equality (`===`)
+
+```javascript
+console.log(null === undefined);
+```
+
+Output
+
+```text
+false
+```
+
+Because they are different primitive values.
+
+---
+
+# More Comparisons
+
+```javascript
+console.log(null == null);          // true
+console.log(undefined == undefined);// true
+
+console.log(null === null);         // true
+console.log(undefined === undefined);// true
+
+console.log(null === undefined);    // false
+```
+
+---
+
+# Boolean Conversion
+
+Both are **falsy** values.
+
+```javascript
+console.log(Boolean(null));
+console.log(Boolean(undefined));
+```
+
+Output
+
+```text
+false
+false
+```
+
+---
+
+# Arithmetic Behavior
+
+```javascript
+console.log(null + 5);
+```
+
+Output
+
+```text
+5
+```
+
+`null` is converted to `0` in numeric operations.
+
+---
+
+```javascript
+console.log(undefined + 5);
+```
+
+Output
+
+```text
+NaN
+```
+
+`undefined` cannot be converted into a meaningful numeric value.
+
+---
+
+# JSON Behavior
+
+`null` is a valid JSON value, while `undefined` is not.
+
+```javascript
+const obj = {
+    a: null,
+    b: undefined
+};
+
+console.log(JSON.stringify(obj));
+```
+
+Output
+
+```text
+{"a":null}
+```
+
+The `b` property is omitted because `undefined` values are not represented in JSON objects.
+
+---
+
+# Visual Analogy
+
+Imagine a mailbox:
+
+### `undefined`
+
+📬 The mailbox has **never had any mail placed inside**.
+
+```javascript
+let mail;
+```
+
+No value has ever been assigned.
+
+---
+
+### `null`
+
+📬 The mailbox **exists, but someone intentionally emptied it**.
+
+```javascript
+let mail = null;
+```
+
+A value was deliberately set to indicate "nothing here."
+
+---
+
+# Best Practices
+
+* Use `undefined` to represent values that are not yet assigned or are missing naturally.
+* Use `null` when your application logic intentionally represents the absence of a value.
+* Prefer strict equality (`===`) to avoid unexpected type coercion.
+* Avoid checking only with `== null` unless you intentionally want to treat both `null` and `undefined` as equivalent.
+
+---
+
+# Common Pitfalls
+
+### Pitfall 1: Confusing `null` with `undefined`
+
+```javascript
+let a;
+let b = null;
+
+console.log(a === b);
+```
+
+Output
+
+```text
+false
+```
+
+They both represent "no value," but they are distinct values.
+
+---
+
+### Pitfall 2: Using `typeof null`
+
+```javascript
+console.log(typeof null);
+```
+
+Output
+
+```text
+object
+```
+
+This is a long-standing JavaScript quirk, not an indication that `null` is actually an object.
+
+---
+
+# Interview Questions
+
+### 1. What is the difference between `null` and `undefined`?
+
+* `undefined` means a value has not been assigned or is missing.
+* `null` means the programmer intentionally assigned "no value."
+
+---
+
+### 2. Why does `typeof null` return `"object"`?
+
+Because of a historical bug in JavaScript that was preserved for backward compatibility.
+
+---
+
+### 3. Is `null == undefined` true?
+
+Yes.
+
+```javascript
+null == undefined   // true
+```
+
+---
+
+### 4. Is `null === undefined` true?
+
+No.
+
+```javascript
+null === undefined   // false
+```
+
+---
+
+### 5. Which should you use in your own code?
+
+Generally, use **`null`** when you intentionally want to indicate the absence of a value. Let **`undefined`** occur naturally for uninitialized or missing values, rather than assigning it yourself.
+
+---
+
+# Summary
+
+| Aspect               | `null`                         | `undefined`                    |
+| -------------------- | ------------------------------ | ------------------------------ |
+| Represents           | Intentional absence of a value | Uninitialized or missing value |
+| Assigned by          | Programmer                     | JavaScript engine (usually)    |
+| `typeof`             | `"object"` *(legacy behavior)* | `"undefined"`                  |
+| Falsy                | ✅                              | ✅                              |
+| JSON support         | Included                       | Omitted in object properties   |
+| Numeric conversion   | `0`                            | `NaN`                          |
+| `null == undefined`  | `true`                         | `true`                         |
+| `null === undefined` | `false`                        | `false`                        |
+
+**Rule of thumb:** Use **`null`** when you mean *"there is deliberately no value"*, and expect **`undefined`** when a value hasn't been provided or doesn't exist.
