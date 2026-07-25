@@ -1,6 +1,7 @@
 
 Learning_Playwright3x:
 '####################################################################
+git repository:
 Day1:
 AI koi use kar leta hu :github copilot,command code,- Free githubcopilot 
 
@@ -51,4 +52,8 @@ git push origin main
 
 Note: There are lot of other git commands as well which is needed to be studied
 
-
+The task assigned was 
+1)Do research about identifiers and literals-Searched and understood need to share in repository.
+2)Do research about null and undefined- Searched and understood need to share in Repository.
+Perform 2 random qa battle- Done (Screenshot saved in desktop named QA Battle)
+aLSO LINKEDIN post
