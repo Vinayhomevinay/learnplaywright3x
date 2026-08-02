@@ -1,6 +1,7 @@
 function processData(input) {
     var marks = Number(input);
 
+
     if (marks > 90) {
         console.log("AA");
     }
