@@ -1,20 +1,22 @@
-let fruits = ["banana", "apple", "cherry"];
-fruits.sort();
-console.log(fruits);
-//  alphabetical by default 
+// Slice & Combining
 
-let score = [4,3,2];
-console.log(score.sort());
+let arr = [1, 2, 3, 4, 5];
+// slice(start, end) — returns new array, 
+// does NOT mutate actual -> ( start, end-1) . index = 0
+//Don't give the end, it will automatically 
+// take from start to end.
 
-let nums = [10,1,21,2];
-// nums.sort();
-console.log(nums); //  1,2,10,21 -
-// Natural Sorting - Lexicographic / string sort 
+console.log(arr.slice(1, 3));
+console.log(arr);
 
-// Proper Sorting, Asc , Desc
-// nums.sort((a,b) => a-b);
+console.log(arr.slice(2));
 
-nums.sort((a,b) => b-a); // Desc
-console.log(nums);
-nums.reverse();
-console.log(nums);
+
+console.log(arr.slice(-2)); // Right side.
+console.log(arr.slice(-3));
+
+console.log(arr.slice(0));
+
+console.log(arr.slice(-5));
+
+console.log(arr.slice(-3, -5));
