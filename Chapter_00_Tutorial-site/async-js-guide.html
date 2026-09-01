@@ -1,0 +1,798 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Async JS Suite — 6 Tests You Need to Pass</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#0B0E14;
+    --surface:#131722;
+    --surface-2:#1A2030;
+    --border:#232838;
+    --text:#E6E9F0;
+    --text-dim:#8B93A7;
+    --text-faint:#5B6478;
+    --pass:#3FB950;
+    --pass-dim:#1B4721;
+    --fail:#F85149;
+    --fail-dim:#4A1615;
+    --pending:#D4A72C;
+    --pending-dim:#3D3212;
+    --info:#58A6FF;
+    --radius:10px;
+    --font-display:'Space Grotesk',sans-serif;
+    --font-body:'Inter',sans-serif;
+    --font-mono:'JetBrains Mono',monospace;
+  }
+
+  *{box-sizing:border-box; margin:0; padding:0;}
+  html{scroll-behavior:smooth;}
+  body{background:var(--bg); color:var(--text); font-family:var(--font-body); line-height:1.65; -webkit-font-smoothing:antialiased;}
+
+  @media (prefers-reduced-motion: reduce){
+    html{scroll-behavior:auto;}
+    *{animation-duration:0.01ms !important; transition-duration:0.01ms !important;}
+  }
+
+  a{color:var(--info);}
+
+  .shell{display:grid; grid-template-columns:260px 1fr; max-width:1240px; margin:0 auto;}
+
+  /* ---------- Sidebar ---------- */
+  .suite-nav{position:sticky; top:0; height:100vh; overflow-y:auto; border-right:1px solid var(--border); padding:28px 18px;}
+  .suite-nav::-webkit-scrollbar{width:6px;}
+  .suite-nav::-webkit-scrollbar-thumb{background:var(--border); border-radius:4px;}
+
+  .suite-brand{font-family:var(--font-display); font-weight:700; font-size:1.05rem; letter-spacing:-0.02em; margin-bottom:4px; display:flex; align-items:center; gap:8px;}
+  .suite-brand .dot{width:8px; height:8px; border-radius:50%; background:var(--pass); box-shadow:0 0 0 3px var(--pass-dim); flex-shrink:0;}
+  .suite-sub{font-size:0.75rem; color:var(--text-faint); font-family:var(--font-mono); margin-bottom:22px;}
+
+  .suite-list{list-style:none;}
+  .suite-list li{margin-bottom:2px;}
+  .suite-list a{display:flex; align-items:center; gap:10px; text-decoration:none; color:var(--text-dim); font-size:0.86rem; padding:7px 10px; border-radius:7px; transition:background 0.15s ease, color 0.15s ease; font-family:var(--font-mono);}
+  .suite-list a:hover{background:var(--surface); color:var(--text);}
+  .suite-list a.active{background:var(--surface-2); color:var(--text);}
+
+  .suite-check{width:14px; height:14px; border-radius:4px; border:1.5px solid var(--text-faint); flex-shrink:0; display:flex; align-items:center; justify-content:center; font-size:10px; color:transparent; transition:all 0.2s ease;}
+  .suite-list a.active .suite-check, .suite-list a.done .suite-check{background:var(--pass); border-color:var(--pass); color:#04150a;}
+  .suite-list a.done .suite-check::after{content:"✓";}
+
+  .suite-group-label{font-size:0.68rem; text-transform:uppercase; letter-spacing:0.08em; color:var(--text-faint); margin:20px 10px 8px;}
+
+  .suite-progress-track{height:4px; background:var(--border); border-radius:2px; margin:18px 10px 0; overflow:hidden;}
+  .suite-progress-fill{height:100%; width:0%; background:var(--pass); transition:width 0.2s ease;}
+  .suite-progress-label{font-size:0.68rem; font-family:var(--font-mono); color:var(--text-faint); margin:6px 10px 0;}
+
+  /* ---------- Main ---------- */
+  main{padding:0 0 100px;}
+  section{padding:64px 48px; border-bottom:1px solid var(--border); scroll-margin-top:20px;}
+
+  /* ---------- Hero ---------- */
+  .hero{padding:72px 48px 56px; background:radial-gradient(circle at 85% -10%, rgba(88,166,255,0.09), transparent 45%), var(--bg);}
+  .hero h1{font-family:var(--font-display); font-size:clamp(2.1rem, 4.2vw, 3.4rem); font-weight:700; letter-spacing:-0.03em; line-height:1.08; max-width:820px; margin-bottom:20px; margin-top:8px;}
+  .hero h1 .accent{color:var(--pass);}
+  .hero p.lede{font-size:1.08rem; color:var(--text-dim); max-width:640px; margin-bottom:20px;}
+  .hero p.lede2{font-size:0.96rem; color:var(--text-dim); max-width:640px; margin-bottom:36px;}
+
+  .trace-btn{font-family:var(--font-mono); font-size:0.76rem; background:var(--surface-2); border:1px solid var(--border); color:var(--text); padding:7px 12px; border-radius:6px; cursor:pointer; transition:border-color 0.15s ease, transform 0.1s ease;}
+  .trace-btn:hover{border-color:var(--info);}
+  .trace-btn:active{transform:scale(0.97);}
+
+  .trace-line{display:flex; gap:10px; padding:3px 0; color:var(--text-dim); animation:fadeIn 0.2s ease;}
+  @keyframes fadeIn{from{opacity:0; transform:translateY(-2px);} to{opacity:1; transform:translateY(0);}}
+  .trace-line .t{color:var(--text-faint); flex-shrink:0;}
+  .trace-line.pass .msg{color:var(--pass);}
+  .trace-line.fail .msg{color:var(--fail);}
+  .trace-line.pending .msg{color:var(--pending);}
+  .trace-empty{color:var(--text-faint); font-style:italic;}
+
+  /* ---------- Get-started card row (audience / approach / this page) ---------- */
+  .card-row{display:grid; grid-template-columns:repeat(3, 1fr); gap:18px; margin-top:8px;}
+  .intro-card{background:var(--surface); border:1px solid var(--border); border-radius:var(--radius); padding:26px 24px; transition:border-color 0.15s ease, transform 0.15s ease;}
+  .intro-card:hover{border-color:var(--info); transform:translateY(-2px);}
+  .intro-card .ic-icon{display:inline-flex; align-items:center; justify-content:center; width:40px; height:40px; border-radius:10px; background:var(--surface-2); font-size:1.2rem; margin-bottom:14px;}
+  .intro-card h3{font-family:var(--font-display); font-size:1.05rem; font-weight:600; margin-bottom:10px; letter-spacing:-0.01em;}
+  .intro-card p{color:var(--text-dim); font-size:0.9rem; line-height:1.6;}
+  .intro-card p strong{color:var(--text);}
+  .intro-card p code{font-family:var(--font-mono); font-size:0.85em; color:var(--info); background:var(--surface-2); padding:1px 5px; border-radius:4px;}
+  @media(max-width:820px){.card-row{grid-template-columns:1fr;}}
+
+  /* ---------- Section heading pattern ---------- */
+  .kw-header{display:flex; align-items:baseline; gap:14px; margin-bottom:8px; flex-wrap:wrap;}
+  .kw-tag{font-family:var(--font-mono); font-size:0.72rem; color:var(--pending); background:var(--pending-dim); padding:3px 9px; border-radius:5px; white-space:nowrap;}
+  .kw-header h2{font-family:var(--font-display); font-size:1.9rem; font-weight:600; letter-spacing:-0.02em;}
+  .kw-tagline{color:var(--text-dim); max-width:680px; margin-bottom:28px; font-size:0.98rem;}
+
+  /* ---------- Structured concept steps ---------- */
+  .step{border-left:2px solid var(--border); padding-left:22px; margin-bottom:26px; margin-left:2px; position:relative;}
+  .step::before{content:attr(data-step); position:absolute; left:-12px; top:1px; width:22px; height:22px; border-radius:50%; background:var(--surface-2); border:2px solid var(--border); font-family:var(--font-mono); font-size:0.64rem; display:flex; align-items:center; justify-content:center; color:var(--text-dim);}
+  .step-label{font-family:var(--font-mono); font-size:0.68rem; text-transform:uppercase; letter-spacing:0.07em; color:var(--pending); margin-bottom:8px;}
+  .step-body{color:var(--text-dim); font-size:0.95rem; max-width:760px;}
+  .step-body strong{color:var(--text);}
+  .step-body code{font-family:var(--font-mono); font-size:0.86em; color:var(--info); background:var(--surface-2); padding:1px 5px; border-radius:4px;}
+
+  .analogy-box{background:var(--surface); border:1px dashed var(--border); border-radius:var(--radius); padding:14px 18px; font-size:0.92rem; color:var(--text-dim); max-width:760px;}
+  .analogy-box .aicon{color:var(--pending); margin-right:6px;}
+
+  .pw-box{background:var(--surface); border:1px solid var(--border); border-left:3px solid var(--pass); border-radius:var(--radius); padding:14px 18px; font-size:0.9rem; color:var(--text-dim); max-width:760px;}
+  .pw-box code{font-family:var(--font-mono); font-size:0.82rem; color:var(--pass); background:var(--surface-2); padding:1px 5px; border-radius:4px;}
+
+  .bp-list{list-style:none; max-width:760px; font-size:0.9rem;}
+  .bp-list li{padding:6px 0 6px 24px; position:relative; color:var(--text-dim);}
+  .bp-list.dos li::before{content:"✓"; position:absolute; left:0; color:var(--pass);}
+  .bp-list.donts li::before{content:"✗"; position:absolute; left:0; color:var(--fail);}
+  .bp-cols{display:grid; grid-template-columns:1fr 1fr; gap:20px; max-width:760px;}
+  @media(max-width:700px){.bp-cols{grid-template-columns:1fr;}}
+  .bp-col-title{font-family:var(--font-mono); font-size:0.7rem; text-transform:uppercase; letter-spacing:0.05em; color:var(--text-faint); margin-bottom:4px;}
+
+  /* code block */
+  .code-block{background:var(--surface); border:1px solid var(--border); border-radius:var(--radius); overflow:hidden; max-width:760px;}
+  .code-block .cb-head{display:flex; justify-content:space-between; align-items:center; padding:9px 14px; background:var(--surface-2); border-bottom:1px solid var(--border); font-family:var(--font-mono); font-size:0.72rem; color:var(--text-faint);}
+  .code-block pre{padding:16px; overflow-x:auto; font-family:var(--font-mono); font-size:0.82rem; line-height:1.6;}
+  .code-block .run-row{display:flex; align-items:center; gap:10px; padding:10px 14px; border-top:1px solid var(--border);}
+  .code-block .run-row .run-hint{font-family:var(--font-mono); font-size:0.72rem; color:var(--text-faint);}
+
+  .mini-output{
+    font-family:var(--font-mono); font-size:0.78rem;
+    padding:12px 14px; min-height:56px; max-height:170px;
+    overflow-y:auto; border-top:1px solid var(--border);
+    background:var(--bg);
+  }
+
+  code, pre{color:var(--text);}
+  .tok-kw{color:#FF7B72;}
+  .tok-fn{color:#D2A8FF;}
+  .tok-str{color:#A5D6A7;}
+  .tok-cm{color:var(--text-faint); font-style:italic;}
+  .tok-num{color:#79C0FF;}
+
+  /* timeline / gantt bars */
+  .timeline-wrap{margin-top:14px; max-width:760px;}
+  .timeline-row{display:flex; align-items:center; gap:10px; margin-bottom:8px; font-family:var(--font-mono); font-size:0.72rem;}
+  .timeline-row .tl-label{width:56px; color:var(--text-faint); flex-shrink:0;}
+  .timeline-track{flex:1; height:20px; background:var(--bg); border:1px solid var(--border); border-radius:5px; position:relative; overflow:hidden;}
+  .timeline-bar{position:absolute; top:0; left:0; height:100%; width:0%; background:var(--pending); transition:width linear;}
+  .timeline-bar.done{background:var(--pass);}
+
+  /* ---------- Comparison table ---------- */
+  .compare-table-wrap{overflow-x:auto; border:1px solid var(--border); border-radius:var(--radius);}
+  table.compare{width:100%; border-collapse:collapse; font-size:0.86rem; min-width:720px;}
+  table.compare th, table.compare td{padding:12px 16px; text-align:left; border-bottom:1px solid var(--border);}
+  table.compare th{background:var(--surface-2); font-family:var(--font-mono); font-size:0.74rem; text-transform:uppercase; letter-spacing:0.04em; color:var(--text-dim);}
+  table.compare td{color:var(--text-dim);}
+  table.compare tr:last-child td{border-bottom:none;}
+  table.compare td:first-child{color:var(--text); font-family:var(--font-mono); font-weight:500;}
+  table.compare tr:hover td{background:var(--surface); color:var(--text);}
+
+  /* ---------- FAQ ---------- */
+  .faq-item{border:1px solid var(--border); border-radius:var(--radius); margin-bottom:10px; overflow:hidden; background:var(--surface);}
+  .faq-q{padding:16px 18px; display:flex; justify-content:space-between; align-items:center; cursor:pointer; font-weight:500; font-size:0.94rem;}
+  .faq-q .plus{font-family:var(--font-mono); color:var(--info); transition:transform 0.2s ease; flex-shrink:0; margin-left:12px;}
+  .faq-item.open .faq-q .plus{transform:rotate(45deg);}
+  .faq-a{max-height:0; overflow:hidden; transition:max-height 0.25s ease; color:var(--text-dim); font-size:0.9rem;}
+  .faq-a-inner{padding:0 18px 18px;}
+  .faq-item.open .faq-a{max-height:300px;}
+
+  /* ---------- References ---------- */
+  .ref-note{background:var(--surface); border:1px solid var(--border); border-radius:var(--radius); padding:16px 20px; margin-bottom:20px; font-size:0.88rem; color:var(--text-dim);}
+  .ref-grid{display:grid; grid-template-columns:repeat(auto-fit, minmax(240px,1fr)); gap:14px;}
+  .ref-card{border:1px solid var(--border); background:var(--surface); border-radius:var(--radius); padding:16px 18px; text-decoration:none; display:block; transition:border-color 0.15s ease;}
+  .ref-card:hover{border-color:var(--info);}
+  .ref-card .ref-src{font-family:var(--font-mono); font-size:0.68rem; color:var(--text-faint); text-transform:uppercase; letter-spacing:0.05em; margin-bottom:6px;}
+  .ref-card .ref-title{color:var(--text); font-weight:500; font-size:0.92rem;}
+
+  footer{padding:36px 48px 60px; color:var(--text-faint); font-size:0.8rem; font-family:var(--font-mono);}
+
+  @media(max-width:760px){
+    .shell{grid-template-columns:1fr;}
+    .suite-nav{position:relative; height:auto; border-right:none; border-bottom:1px solid var(--border);}
+    section{padding:44px 20px;}
+    .hero{padding:44px 20px 40px;}
+    .recipe-step{border-right:none; border-bottom:1px solid var(--border);}
+  }
+</style>
+</head>
+<body>
+
+<div class="shell">
+  <!-- ============ SIDEBAR ============ -->
+  <nav class="suite-nav" id="suiteNav">
+    <div class="suite-brand"><span class="dot"></span>Async JS Guide</div>
+    <div class="suite-sub">6 concepts · read in order</div>
+
+    <div class="suite-group-label">Start here</div>
+    <ul class="suite-list">
+      <li><a href="#hero-section" data-target="hero-section"><span class="suite-check"></span>Intro</a></li>
+      <li><a href="#get-started" data-target="get-started"><span class="suite-check"></span>Get started</a></li>
+    </ul>
+
+    <div class="suite-group-label">Core concepts</div>
+    <ul class="suite-list">
+      <li><a href="#async" data-target="async"><span class="suite-check"></span>1 · Async</a></li>
+      <li><a href="#await" data-target="await"><span class="suite-check"></span>2 · await</a></li>
+      <li><a href="#promiseall" data-target="promiseall"><span class="suite-check"></span>3 · Promise.all</a></li>
+      <li><a href="#promiserace" data-target="promiserace"><span class="suite-check"></span>4 · Promise.race</a></li>
+      <li><a href="#promise" data-target="promise"><span class="suite-check"></span>5 · new Promise</a></li>
+      <li><a href="#callback" data-target="callback"><span class="suite-check"></span>6 · Callback</a></li>
+    </ul>
+
+    <div class="suite-group-label">Wrap-up</div>
+    <ul class="suite-list">
+      <li><a href="#compare" data-target="compare"><span class="suite-check"></span>Comparison</a></li>
+      <li><a href="#faq" data-target="faq"><span class="suite-check"></span>FAQs</a></li>
+      <li><a href="#refs" data-target="refs"><span class="suite-check"></span>References</a></li>
+    </ul>
+
+    <div class="suite-progress-track"><div class="suite-progress-fill" id="progressFill"></div></div>
+    <div class="suite-progress-label" id="progressLabel">0 / 12 sections read</div>
+  </nav>
+
+  <!-- ============ MAIN ============ -->
+  <main>
+
+    <!-- HERO / INTRO -->
+    <section class="hero" id="hero-section">
+      <h1>JavaScript Async Programming <span class="accent">in Playwright</span></h1>
+      <p class="lede">If you've typed <code>await page.click(...)</code> without ever stopping to ask what <code>await</code> is actually doing — you're in exactly the right place.</p>
+      <p class="lede2">Six small concepts, explained simply, with real code you can run and watch happen for yourself.</p>
+    </section>
+
+    <!-- GET STARTED: audience / approach / this page -->
+    <section id="get-started">
+      <div class="kw-header"><span class="kw-tag">WELCOME</span><h2>Before you dive in</h2></div>
+      <p class="kw-tagline">Three quick things, then straight into the concepts.</p>
+
+      <div class="card-row">
+        <div class="intro-card">
+          <span class="ic-icon">🎯</span>
+          <h3>Audience</h3>
+          <p>New to code, a manual tester curious about automation, or already scripting in Playwright and wondering what <code>async</code>/<code>await</code> really do — this page is for you. No prior JavaScript background needed, just come as you are.</p>
+        </div>
+        <div class="intro-card">
+          <span class="ic-icon">🧱</span>
+          <h3>Approach</h3>
+          <p>Every concept below follows one consistent flow: <strong>simple definition → real-world analogy → technical definition → code → Playwright use case → best practices.</strong> Learn the pattern once, and every section reads itself.</p>
+        </div>
+        <div class="intro-card">
+          <span class="ic-icon">🖥️</span>
+          <h3>This page</h3>
+          <p>A self-contained, interactive guide — click <strong>▶ run this</strong> to execute real code, watch the timeline bars for Promise.all and Promise.race, and let the sidebar track your progress as you go.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- 1. ASYNC -->
+    <section id="async">
+      <div class="kw-header"><span class="kw-tag">CONCEPT 1</span><h2>Async</h2></div>
+      <p class="kw-tagline">The keyword you put in front of a function to tell JavaScript "this one will take time — treat it that way."</p>
+
+      <div class="step" data-step="1"><div class="step-label">Simple definition</div>
+        <div class="step-body"><code>async</code> in front of a function means: this function always hands back a Promise, and it's allowed to use <code>await</code> inside itself.</div>
+      </div>
+
+      <div class="step" data-step="2"><div class="step-label">Real-world analogy</div>
+        <div class="analogy-box"><span class="aicon">◆</span>Marking a function <code>async</code> is like stamping a food order ticket "this one takes time" — the kitchen doesn't hand it to the customer instantly; it knows to come back to it once it's ready.</div>
+      </div>
+
+      <div class="step" data-step="3"><div class="step-label">Technical definition</div>
+        <div class="step-body">An <code>async function</code> declaration always returns a Promise. If the function's return value isn't already a promise, it gets implicitly wrapped in one. An async function with no <code>await</code> inside it runs synchronously until it returns.</div>
+      </div>
+
+      <div class="step" data-step="4"><div class="step-label">Code</div>
+        <div class="code-block">
+          <div class="cb-head"><span>async-fn.js</span><span>node</span></div>
+          <pre><span class="tok-kw">async function</span> <span class="tok-fn">main</span>() {
+  <span class="tok-kw">return</span> <span class="tok-str">"hello"</span>;
+}
+
+main().then(console.log); <span class="tok-cm">// "hello" — auto-wrapped in a Promise</span></pre>
+          <div class="run-row"><button class="trace-btn" onclick="demoAsyncAwait('asyncOut')">▶ run this</button><span class="run-hint">watch the output below</span></div>
+          <div class="mini-output" id="asyncOut"><div class="trace-empty">// click "run this" to see it execute</div></div>
+        </div>
+      </div>
+
+      <div class="step" data-step="5"><div class="step-label">Playwright use case</div>
+        <div class="pw-box">Every single Playwright test callback is an async function: <code>test('login works', async ({ page }) => { ... })</code>. That's this keyword, in literally every test file you'll ever write.</div>
+      </div>
+
+      <div class="step" data-step="6"><div class="step-label">Best practices</div>
+        <div class="bp-cols">
+          <div><div class="bp-col-title">Do</div><ul class="bp-list dos"><li>Mark every Playwright test/fixture callback <code>async</code> by default</li><li>Let it return a value directly — the Promise wrapping is automatic</li></ul></div>
+          <div><div class="bp-col-title">Don't</div><ul class="bp-list donts"><li>Assume <code>async</code> makes code run in parallel — it doesn't, by itself</li><li>Mix <code>async</code> functions with old-style callback params without a reason</li></ul></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 2. AWAIT -->
+    <section id="await">
+      <div class="kw-header"><span class="kw-tag">CONCEPT 2</span><h2>await</h2></div>
+      <p class="kw-tagline">The keyword that pauses your function at that exact line, until the Promise next to it settles.</p>
+
+      <div class="step" data-step="1"><div class="step-label">Simple definition</div>
+        <div class="step-body"><code>await</code> pauses execution inside an <code>async</code> function until the Promise on its right finishes, then hands you back the resolved value.</div>
+      </div>
+
+      <div class="step" data-step="2"><div class="step-label">Real-world analogy</div>
+        <div class="analogy-box"><span class="aicon">◆</span><code>await</code> is standing at the counter until your coffee is actually handed to you — not walking away and assuming it's ready because you ordered it.</div>
+      </div>
+
+      <div class="step" data-step="3"><div class="step-label">Technical definition</div>
+        <div class="step-body">An <code>await</code> expression suspends execution of its surrounding <code>async</code> function until the awaited Promise is fulfilled or rejected. The resolved value becomes the result of the expression; a rejection throws, catchable with <code>try/catch</code>. <code>await</code> is only valid inside an <code>async</code> function (or as top-level await in a module).</div>
+      </div>
+
+      <div class="step" data-step="4"><div class="step-label">Code</div>
+        <div class="code-block">
+          <div class="cb-head"><span>await.js</span><span>node</span></div>
+          <pre><span class="tok-kw">function</span> <span class="tok-fn">getUser</span>() {
+  <span class="tok-kw">return new</span> <span class="tok-fn">Promise</span>((resolve) => {
+    setTimeout(() => resolve({ name: <span class="tok-str">"Vinay"</span> }), <span class="tok-num">1000</span>);
+  });
+}
+
+<span class="tok-kw">async function</span> <span class="tok-fn">main</span>() {
+  <span class="tok-kw">try</span> {
+    console.log(<span class="tok-str">"Fetching user..."</span>);
+    <span class="tok-kw">const</span> user = <span class="tok-kw">await</span> <span class="tok-fn">getUser</span>();
+    console.log(user);
+  } <span class="tok-kw">catch</span> (err) {
+    console.log(<span class="tok-str">"Error:"</span>, err);
+  }
+}
+main();</pre>
+          <div class="run-row"><button class="trace-btn" onclick="demoAsyncAwait('awaitOut')">▶ run this</button><span class="run-hint">watch the output below</span></div>
+          <div class="mini-output" id="awaitOut"><div class="trace-empty">// click "run this" to see it execute</div></div>
+        </div>
+      </div>
+
+      <div class="step" data-step="5"><div class="step-label">Playwright use case</div>
+        <div class="pw-box">Nearly every Playwright API call needs <code>await</code> in front: <code>await page.click(...)</code>, <code>await expect(locator).toBeVisible()</code> — because the click or assertion itself returns a Promise that resolves once the browser confirms it happened.</div>
+      </div>
+
+      <div class="step" data-step="6"><div class="step-label">Best practices</div>
+        <div class="bp-cols">
+          <div><div class="bp-col-title">Do</div><ul class="bp-list dos"><li>Await every Playwright action and assertion, no exceptions</li><li>Wrap awaited calls in <code>try/catch</code> when you need custom error handling</li></ul></div>
+          <div><div class="bp-col-title">Don't</div><ul class="bp-list donts"><li>Forget an <code>await</code> — it's the #1 cause of flaky, hard-to-explain test failures</li><li>Use <code>await</code> outside an <code>async</code> function (outside top-level module await)</li></ul></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 3. PROMISE.ALL -->
+    <section id="promiseall">
+      <div class="kw-header"><span class="kw-tag">CONCEPT 3</span><h2>Promise.all</h2></div>
+      <p class="kw-tagline">Runs several promises at once, and waits until every one of them has finished.</p>
+
+      <div class="step" data-step="1"><div class="step-label">Simple definition</div>
+        <div class="step-body"><code>Promise.all</code> runs multiple promises in parallel and waits for <strong>all</strong> of them to finish. If even one rejects, the whole thing rejects immediately.</div>
+      </div>
+
+      <div class="step" data-step="2"><div class="step-label">Real-world analogy</div>
+        <div class="analogy-box"><span class="aicon">◆</span>Ordering three dishes at a restaurant table together — the meal is "served" only once the slowest dish is out, and if the kitchen burns one dish, the whole order is flagged as a problem.</div>
+      </div>
+
+      <div class="step" data-step="3"><div class="step-label">Technical definition</div>
+        <div class="step-body"><code>Promise.all()</code> takes an iterable of promises and returns one Promise that fulfills when every input promise fulfills, with an array of values in the original order. It rejects as soon as any input promise rejects, with that first rejection reason — the other promises keep running, but their results aren't captured by <code>Promise.all</code>.</div>
+      </div>
+
+      <div class="step" data-step="4"><div class="step-label">Code</div>
+        <div class="code-block">
+          <div class="cb-head"><span>promise-all.js</span><span>node</span></div>
+          <pre><span class="tok-kw">const</span> p1 = <span class="tok-kw">new</span> <span class="tok-fn">Promise</span>(r => setTimeout(() => r(<span class="tok-str">"A"</span>), <span class="tok-num">1000</span>));
+<span class="tok-kw">const</span> p2 = <span class="tok-kw">new</span> <span class="tok-fn">Promise</span>(r => setTimeout(() => r(<span class="tok-str">"B"</span>), <span class="tok-num">2000</span>));
+<span class="tok-kw">const</span> p3 = <span class="tok-kw">new</span> <span class="tok-fn">Promise</span>(r => setTimeout(() => r(<span class="tok-str">"C"</span>), <span class="tok-num">1500</span>));
+
+<span class="tok-kw">async function</span> <span class="tok-fn">main</span>() {
+  <span class="tok-kw">const</span> results = <span class="tok-kw">await</span> Promise.<span class="tok-fn">all</span>([p1, p2, p3]);
+  console.log(results); <span class="tok-cm">// ["A","B","C"] after ~2s (slowest wins)</span>
+}
+main();</pre>
+          <div class="run-row"><button class="trace-btn" onclick="demoAll('allOut')">▶ run this</button><span class="run-hint">watch the timeline + output below</span></div>
+          <div class="timeline-wrap" style="padding:0 14px 16px;">
+            <div class="timeline-row"><span class="tl-label">p1 (1.0s)</span><div class="timeline-track"><div class="timeline-bar" id="allBar1"></div></div></div>
+            <div class="timeline-row"><span class="tl-label">p2 (2.0s)</span><div class="timeline-track"><div class="timeline-bar" id="allBar2"></div></div></div>
+            <div class="timeline-row"><span class="tl-label">p3 (1.5s)</span><div class="timeline-track"><div class="timeline-bar" id="allBar3"></div></div></div>
+          </div>
+          <div class="mini-output" id="allOut"><div class="trace-empty">// click "run this" to see it execute</div></div>
+        </div>
+      </div>
+
+      <div class="step" data-step="5"><div class="step-label">Playwright use case</div>
+        <div class="pw-box">The classic pattern: <code>await Promise.all([page.waitForNavigation(), page.click('#submit')])</code> — the click triggers navigation, so you start "watching for navigation" and "clicking" at the same moment, instead of clicking first and risking a missed navigation event.</div>
+      </div>
+
+      <div class="step" data-step="6"><div class="step-label">Best practices</div>
+        <div class="bp-cols">
+          <div><div class="bp-col-title">Do</div><ul class="bp-list dos"><li>Use it only for genuinely independent tasks that can run together</li><li>Use <code>Promise.allSettled</code> instead when partial failure is acceptable</li></ul></div>
+          <div><div class="bp-col-title">Don't</div><ul class="bp-list donts"><li>Expect partial results back if one promise rejects — you lose them all</li><li>Use it when steps genuinely depend on each other's output</li></ul></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 4. PROMISE.RACE -->
+    <section id="promiserace">
+      <div class="kw-header"><span class="kw-tag">CONCEPT 4</span><h2>Promise.race</h2></div>
+      <p class="kw-tagline">Settles the instant the first promise settles — win or lose — and ignores everyone else.</p>
+
+      <div class="step" data-step="1"><div class="step-label">Simple definition</div>
+        <div class="step-body"><code>Promise.race</code> settles as soon as the <strong>first</strong> promise in the list settles, whether that's a resolve or a reject, and ignores every promise that finishes after it.</div>
+      </div>
+
+      <div class="step" data-step="2"><div class="step-label">Real-world analogy</div>
+        <div class="analogy-box"><span class="aicon">◆</span>Calling three delivery riders for the same order — whichever one arrives first is the one you deal with; the other two are quietly waved off when they show up later.</div>
+      </div>
+
+      <div class="step" data-step="3"><div class="step-label">Technical definition</div>
+        <div class="step-body"><code>Promise.race()</code> takes an iterable of promises and returns a Promise that settles with the eventual state — fulfilled or rejected — of whichever input promise settles first. It marks all input promises as "handled" immediately, so later rejections from the losing promises don't trigger unhandled-rejection warnings; those losing promises keep running in the background, they just aren't cancelled.</div>
+      </div>
+
+      <div class="step" data-step="4"><div class="step-label">Code</div>
+        <div class="code-block">
+          <div class="cb-head"><span>promise-race.js</span><span>node</span></div>
+          <pre><span class="tok-kw">const</span> slow = <span class="tok-kw">new</span> <span class="tok-fn">Promise</span>(r => setTimeout(() => r(<span class="tok-str">"slow done"</span>), <span class="tok-num">2000</span>));
+<span class="tok-kw">const</span> fast = <span class="tok-kw">new</span> <span class="tok-fn">Promise</span>(r => setTimeout(() => r(<span class="tok-str">"fast done"</span>), <span class="tok-num">500</span>));
+
+<span class="tok-kw">async function</span> <span class="tok-fn">main</span>() {
+  <span class="tok-kw">const</span> result = <span class="tok-kw">await</span> Promise.<span class="tok-fn">race</span>([slow, fast]);
+  console.log(result); <span class="tok-cm">// "fast done" after 500ms</span>
+}
+main();
+
+<span class="tok-cm">// Classic use: race a call against a timeout</span>
+<span class="tok-kw">const</span> timeout = <span class="tok-kw">new</span> <span class="tok-fn">Promise</span>((_, reject) =>
+  setTimeout(() => reject(<span class="tok-str">"Request timed out"</span>), <span class="tok-num">3000</span>)
+);
+Promise.<span class="tok-fn">race</span>([apiCall(), timeout]);</pre>
+          <div class="run-row"><button class="trace-btn" onclick="demoRace('raceOut')">▶ run this</button><span class="run-hint">watch the timeline + output below</span></div>
+          <div class="timeline-wrap" style="padding:0 14px 16px;">
+            <div class="timeline-row"><span class="tl-label">slow (2.0s)</span><div class="timeline-track"><div class="timeline-bar" id="raceBar1"></div></div></div>
+            <div class="timeline-row"><span class="tl-label">fast (0.5s)</span><div class="timeline-track"><div class="timeline-bar" id="raceBar2"></div></div></div>
+          </div>
+          <div class="mini-output" id="raceOut"><div class="trace-empty">// click "run this" to see it execute</div></div>
+        </div>
+      </div>
+
+      <div class="step" data-step="5"><div class="step-label">Playwright use case</div>
+        <div class="pw-box">Enforcing a custom timeout around a flaky third-party call: race your actual request promise against a timer-based rejection, so a hanging call fails your test fast instead of stalling the whole run.</div>
+      </div>
+
+      <div class="step" data-step="6"><div class="step-label">Best practices</div>
+        <div class="bp-cols">
+          <div><div class="bp-col-title">Do</div><ul class="bp-list dos"><li>Use it specifically for timeout patterns</li><li>Remember the losing promise's rejection is silently ignored — it won't crash your app</li></ul></div>
+          <div><div class="bp-col-title">Don't</div><ul class="bp-list donts"><li>Assume the losing promise gets cancelled — it keeps running</li><li>Rely on it for "first success wins" — a fast rejection still wins the race (use <code>Promise.any</code> for that)</li></ul></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 5. NEW PROMISE -->
+    <section id="promise">
+      <div class="kw-header"><span class="kw-tag">CONCEPT 5</span><h2>new Promise</h2></div>
+      <p class="kw-tagline">The constructor you use to wrap any operation that isn't already Promise-based.</p>
+
+      <div class="step" data-step="1"><div class="step-label">Simple definition</div>
+        <div class="step-body">A Promise is an object representing a value that will exist eventually. It starts <em>pending</em>, then settles as either <em>resolved</em> or <em>rejected</em> — exactly once.</div>
+      </div>
+
+      <div class="step" data-step="2"><div class="step-label">Real-world analogy</div>
+        <div class="analogy-box"><span class="aicon">◆</span>Ordering food at a counter: you get a token (the Promise) immediately, and later it's either called out as ready (resolved) or the kitchen tells you they're out of stock (rejected).</div>
+      </div>
+
+      <div class="step" data-step="3"><div class="step-label">Technical definition</div>
+        <div class="step-body">A promise is said to be <em>settled</em> once it is fulfilled or rejected — never both, and never more than once. If a handler is attached after the promise has already settled, it still fires, so there's no race condition between the async work finishing and a <code>.then()</code>/<code>.catch()</code> being attached later.</div>
+      </div>
+
+      <div class="step" data-step="4"><div class="step-label">Code</div>
+        <div class="code-block">
+          <div class="cb-head"><span>promise.js</span><span>node</span></div>
+          <pre><span class="tok-kw">const</span> myPromise = <span class="tok-kw">new</span> <span class="tok-fn">Promise</span>((resolve, reject) => {
+  setTimeout(() => {
+    <span class="tok-kw">const</span> success = <span class="tok-kw">true</span>;
+    <span class="tok-kw">if</span> (success) resolve(<span class="tok-str">"Data loaded!"</span>);
+    <span class="tok-kw">else</span> reject(<span class="tok-str">"Something went wrong"</span>);
+  }, <span class="tok-num">1000</span>);
+});
+
+myPromise
+  .then((result) => console.log(result))
+  .catch((error) => console.log(error));</pre>
+          <div class="run-row"><button class="trace-btn" onclick="demoPromise('promiseOut')">▶ run this</button><span class="run-hint">watch the output below</span></div>
+          <div class="mini-output" id="promiseOut"><div class="trace-empty">// click "run this" to see it execute</div></div>
+        </div>
+      </div>
+
+      <div class="step" data-step="5"><div class="step-label">Playwright use case</div>
+        <div class="pw-box">Wrapping a legacy, callback-based Node API (like an old <code>fs.readFile</code> call, or a third-party SDK that predates promises) in <code>new Promise(...)</code> so it can be <code>await</code>ed inside a Playwright fixture or test step.</div>
+      </div>
+
+      <div class="step" data-step="6"><div class="step-label">Best practices</div>
+        <div class="bp-cols">
+          <div><div class="bp-col-title">Do</div><ul class="bp-list dos"><li>Reach for it only to wrap genuinely callback-based or event-based APIs</li><li>Always call <code>resolve</code> or <code>reject</code> exactly once</li></ul></div>
+          <div><div class="bp-col-title">Don't</div><ul class="bp-list donts"><li>Wrap something that already returns a Promise — known as the "Promise constructor antipattern"</li><li>Forget to handle the error path with <code>reject</code></li></ul></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 6. CALLBACK -->
+    <section id="callback">
+      <div class="kw-header"><span class="kw-tag">CONCEPT 6</span><h2>Callback</h2></div>
+      <p class="kw-tagline">The original pattern everything else on this page was built to improve on.</p>
+
+      <div class="step" data-step="1"><div class="step-label">Simple definition</div>
+        <div class="step-body">A callback is a function you hand to another function, to be called later — usually once some async work (a timer, a file read, an API call) finishes.</div>
+      </div>
+
+      <div class="step" data-step="2"><div class="step-label">Real-world analogy</div>
+        <div class="analogy-box"><span class="aicon">◆</span>Telling a colleague "text me once the deploy finishes" instead of standing there watching the pipeline yourself.</div>
+      </div>
+
+      <div class="step" data-step="3"><div class="step-label">Technical definition</div>
+        <div class="step-body">A callback is simply a function reference passed as an argument to another function, invoked by that outer function at a later point — often after an asynchronous operation completes. There's no built-in error-handling convention; each API decides its own callback signature (commonly <code>(error, result)</code> in Node-style APIs).</div>
+      </div>
+
+      <div class="step" data-step="4"><div class="step-label">Code</div>
+        <div class="code-block">
+          <div class="cb-head"><span>callback.js</span><span>node</span></div>
+          <pre><span class="tok-kw">function</span> <span class="tok-fn">getUser</span>(id, callback) {
+  setTimeout(() => {
+    callback({ id, name: <span class="tok-str">"Vinay"</span> });
+  }, <span class="tok-num">1000</span>);
+}
+
+<span class="tok-fn">getUser</span>(<span class="tok-num">1</span>, (user) => {
+  console.log(user); <span class="tok-cm">// runs after 1s</span>
+});</pre>
+          <div class="run-row"><button class="trace-btn" onclick="demoCallback('callbackOut')">▶ run this</button><span class="run-hint">watch the output below</span></div>
+          <div class="mini-output" id="callbackOut"><div class="trace-empty">// click "run this" to see it execute</div></div>
+        </div>
+      </div>
+
+      <div class="step" data-step="5"><div class="step-label">Playwright use case</div>
+        <div class="pw-box">Event listeners: <code>page.on('response', (response) => { ... })</code> or <code>page.on('console', (msg) => { ... })</code> — Playwright's event system is still built on plain callbacks, even though its actions use Promises.</div>
+      </div>
+
+      <div class="step" data-step="6"><div class="step-label">Best practices</div>
+        <div class="bp-cols">
+          <div><div class="bp-col-title">Do</div><ul class="bp-list dos"><li>Use callbacks freely for one-off event listeners (<code>page.on(...)</code>)</li><li>Keep the callback body short and focused</li></ul></div>
+          <div><div class="bp-col-title">Don't</div><ul class="bp-list donts"><li>Nest callbacks for multi-step async flows — convert to async/await instead</li><li>Mix callback-style and promise-style handling for the same operation</li></ul></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- COMPARISON -->
+    <section id="compare">
+      <div class="kw-header"><span class="kw-tag">SUMMARY</span><h2>Comparison table</h2></div>
+      <p class="kw-tagline">All six, side by side — what they do, when they settle, and when to reach for each one.</p>
+
+      <div class="compare-table-wrap">
+        <table class="compare">
+          <thead><tr><th>Keyword</th><th>What it is</th><th>Settles when</th><th>Best for</th></tr></thead>
+          <tbody>
+            <tr><td>Async</td><td>Function modifier</td><td>Always returns a Promise</td><td>Any function that needs await inside</td></tr>
+            <tr><td>await</td><td>Pause operator</td><td>When the awaited Promise settles</td><td>Sequential async steps, readable code</td></tr>
+            <tr><td>Promise.all</td><td>Parallel runner</td><td>When every promise resolves (or one rejects)</td><td>Independent tasks you need all results from</td></tr>
+            <tr><td>Promise.race</td><td>First-past-the-post runner</td><td>When the first promise settles</td><td>Timeouts, "whichever is fastest"</td></tr>
+            <tr><td>new Promise</td><td>Object representing a future value</td><td>Once — resolve() or reject()</td><td>Wrapping any non-promise async operation</td></tr>
+            <tr><td>Callback</td><td>Function passed in, run later</td><td>Whenever the outer function calls it</td><td>Simple one-off async steps, event listeners</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- FAQ -->
+    <section id="faq">
+      <div class="kw-header"><span class="kw-tag">FAQ</span><h2>Frequently asked</h2></div>
+
+      <div class="faq-item">
+        <div class="faq-q" onclick="toggleFaq(this)">Is async/await just a replacement for Promises?<span class="plus">+</span></div>
+        <div class="faq-a"><div class="faq-a-inner">No — async/await is built entirely on top of Promises. Under the hood, an <code>await</code> is still doing the equivalent of a <code>.then()</code>. It's a different way to <em>write</em> the same mechanism, not a different mechanism.</div></div>
+      </div>
+
+      <div class="faq-item">
+        <div class="faq-q" onclick="toggleFaq(this)">Can I use await outside an async function?<span class="plus">+</span></div>
+        <div class="faq-a"><div class="faq-a-inner">Only at the top level of a module (top-level await), which most modern setups support. Inside any regular function, <code>await</code> requires that function to be marked <code>async</code>.</div></div>
+      </div>
+
+      <div class="faq-item">
+        <div class="faq-q" onclick="toggleFaq(this)">What's the difference between Promise.all and Promise.allSettled?<span class="plus">+</span></div>
+        <div class="faq-a"><div class="faq-a-inner"><code>Promise.all</code> rejects immediately if any promise fails, discarding the other results. <code>Promise.allSettled</code> always waits for everything and gives you a status ("fulfilled" or "rejected") per item — useful when partial failure is acceptable.</div></div>
+      </div>
+
+      <div class="faq-item">
+        <div class="faq-q" onclick="toggleFaq(this)">Why does my automation script sometimes fail without an error message?<span class="plus">+</span></div>
+        <div class="faq-a"><div class="faq-a-inner">Usually an unhandled Promise rejection — an <code>await</code> without a surrounding <code>try/catch</code>, or a <code>.then()</code> chain missing a final <code>.catch()</code>. Always wrap awaited calls in error handling in test code.</div></div>
+      </div>
+
+      <div class="faq-item">
+        <div class="faq-q" onclick="toggleFaq(this)">Which one should I actually use day-to-day?<span class="plus">+</span></div>
+        <div class="faq-a"><div class="faq-a-inner">async/await for almost everything you write by hand — it's the most readable. Reach for <code>Promise.all</code> when steps are independent and can run together, and <code>Promise.race</code> specifically for timeout patterns. Plain callbacks mostly show up in event listeners you consume, not code you write fresh.</div></div>
+      </div>
+
+      <div class="faq-item">
+        <div class="faq-q" onclick="toggleFaq(this)">Does Playwright's auto-waiting mean I don't need to understand this?<span class="plus">+</span></div>
+        <div class="faq-a"><div class="faq-a-inner">No — auto-waiting handles waiting for an <em>element</em> to become actionable (visible, stable, enabled). It doesn't remove the need for <code>await</code> in your own test code; without it, your test's own JavaScript moves to the next line before Playwright's action has even started.</div></div>
+      </div>
+    </section>
+
+    <!-- REFERENCES -->
+    <section id="refs">
+      <div class="kw-header"><span class="kw-tag">SOURCES</span><h2>References</h2></div>
+      <p class="kw-tagline">Every technical claim on this page was checked against the sources below before writing — these are the primary docs, not blog paraphrases of paraphrases.</p>
+
+      <div class="ref-note">
+        <strong>Research approach:</strong> definitions for <code>async</code>, <code>await</code>, <code>Promise.all</code>, and <code>Promise.race</code> were verified directly against MDN Web Docs (the standard reference for JavaScript). The Playwright-specific claims (auto-waiting, actionability checks, why <code>await</code> matters in tests) were verified against Playwright's own official docs. Nothing here was written from memory alone — each was checked at the time this page was built.
+      </div>
+
+      <div class="ref-grid">
+        <a class="ref-card" href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/async_function" target="_blank" rel="noopener"><div class="ref-src">MDN Web Docs</div><div class="ref-title">async function — statement reference</div></a>
+        <a class="ref-card" href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/await" target="_blank" rel="noopener"><div class="ref-src">MDN Web Docs</div><div class="ref-title">await — operator reference</div></a>
+        <a class="ref-card" href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise" target="_blank" rel="noopener"><div class="ref-src">MDN Web Docs</div><div class="ref-title">Promise object — full API</div></a>
+        <a class="ref-card" href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise/all" target="_blank" rel="noopener"><div class="ref-src">MDN Web Docs</div><div class="ref-title">Promise.all() — reference</div></a>
+        <a class="ref-card" href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise/race" target="_blank" rel="noopener"><div class="ref-src">MDN Web Docs</div><div class="ref-title">Promise.race() — reference</div></a>
+        <a class="ref-card" href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Using_promises" target="_blank" rel="noopener"><div class="ref-src">MDN Web Docs</div><div class="ref-title">Using promises — composition guide (all/allSettled/race/any)</div></a>
+        <a class="ref-card" href="https://javascript.info/async" target="_blank" rel="noopener"><div class="ref-src">javascript.info</div><div class="ref-title">Promises, async/await — full chapter</div></a>
+        <a class="ref-card" href="https://playwright.dev/docs/writing-tests" target="_blank" rel="noopener"><div class="ref-src">Playwright Docs</div><div class="ref-title">Writing tests — async assertions and actions</div></a>
+        <a class="ref-card" href="https://playwright.dev/docs/actionability" target="_blank" rel="noopener"><div class="ref-src">Playwright Docs</div><div class="ref-title">Auto-waiting — actionability checks explained</div></a>
+        <a class="ref-card" href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Event_loop" target="_blank" rel="noopener"><div class="ref-src">MDN Web Docs</div><div class="ref-title">The Event Loop — how it all runs underneath</div></a>
+      </div>
+    </section>
+
+    <footer>Async JS Guide · 6 concepts covered · built for automation testing enthusiasts</footer>
+
+  </main>
+</div>
+
+<script>
+  // Every demo writes into the mini-output panel belonging to the
+  // section its button lives in, so output always appears right where
+  // the user clicked — Async, await, Promise.all, Promise.race,
+  // new Promise, and Callback each have their own panel.
+  function resolveOut(targetId){
+    return document.getElementById(targetId);
+  }
+  function stamp(){
+    const d = new Date();
+    return d.toTimeString().split(' ')[0] + '.' + String(d.getMilliseconds()).padStart(3,'0');
+  }
+  function clearOut(el){
+    el.innerHTML = '<div class="trace-empty">// running…</div>';
+    el.dataset.hasLines = '';
+  }
+  function log(el, msg, type){
+    if(!el.dataset.hasLines){ el.innerHTML = ''; el.dataset.hasLines = '1'; }
+    const line = document.createElement('div');
+    line.className = 'trace-line ' + (type || '');
+    line.innerHTML = '<span class="t">' + stamp() + '</span><span class="msg">' + msg + '</span>';
+    el.appendChild(line);
+    el.scrollTop = el.scrollHeight;
+  }
+  function wait(ms){ return new Promise(res => setTimeout(res, ms)); }
+
+  function demoCallback(targetId){
+    const el = resolveOut(targetId);
+    clearOut(el);
+    log(el, '→ getUser(1, callback) called', 'pending');
+    function getUser(id, callback){ setTimeout(() => callback({ id, name: 'Vinay' }), 900); }
+    getUser(1, (user) => log(el, '✓ callback fired → ' + JSON.stringify(user), 'pass'));
+  }
+
+  function demoPromise(targetId){
+    const el = resolveOut(targetId);
+    clearOut(el);
+    log(el, '→ new Promise created (pending)', 'pending');
+    const p = new Promise((resolve) => setTimeout(() => resolve('Data loaded!'), 900));
+    p.then((result) => log(el, '✓ resolved → "' + result + '"', 'pass'));
+  }
+
+  async function demoAsyncAwait(targetId){
+    const el = resolveOut(targetId);
+    clearOut(el);
+    log(el, '→ main() started', 'pending');
+    log(el, '  awaiting getUser()...', 'pending');
+    function getUser(){ return new Promise((resolve) => setTimeout(() => resolve({name:'Vinay'}), 900)); }
+    try{
+      const user = await getUser();
+      log(el, '✓ user = ' + JSON.stringify(user), 'pass');
+      log(el, '✓ main() done', 'pass');
+    }catch(err){ log(el, '✗ ' + err, 'fail'); }
+  }
+
+  async function demoAll(targetId){
+    const el = resolveOut(targetId);
+    clearOut(el);
+    log(el, '→ Promise.all([p1, p2, p3]) started', 'pending');
+    animateBar('allBar1', 1000); animateBar('allBar2', 2000); animateBar('allBar3', 1500);
+    const p1 = wait(1000).then(()=> 'A');
+    const p2 = wait(2000).then(()=> 'B');
+    const p3 = wait(1500).then(()=> 'C');
+    const results = await Promise.all([p1,p2,p3]);
+    log(el, '✓ all settled together → [' + results.join(', ') + ']', 'pass');
+  }
+
+  async function demoRace(targetId){
+    const el = resolveOut(targetId);
+    clearOut(el);
+    log(el, '→ Promise.race([slow, fast]) started', 'pending');
+    animateBar('raceBar1', 2000); animateBar('raceBar2', 500);
+    const slow = wait(2000).then(()=> 'slow done');
+    const fast = wait(500).then(()=> 'fast done');
+    const result = await Promise.race([slow, fast]);
+    log(el, '✓ first to settle → "' + result + '" (others still finishing quietly)', 'pass');
+  }
+
+  function animateBar(id, ms){
+    const bar = document.getElementById(id);
+    if(!bar) return;
+    bar.style.transition = 'none'; bar.style.width = '0%'; bar.classList.remove('done');
+    requestAnimationFrame(() => { bar.style.transition = 'width ' + ms + 'ms linear'; bar.style.width = '100%'; });
+    setTimeout(() => bar.classList.add('done'), ms);
+  }
+
+  function toggleFaq(el){
+    const item = el.parentElement;
+    const wasOpen = item.classList.contains('open');
+    document.querySelectorAll('.faq-item.open').forEach(i => i.classList.remove('open'));
+    if(!wasOpen) item.classList.add('open');
+  }
+
+  const navLinks = Array.from(document.querySelectorAll('.suite-list a'));
+  const sectionIds = navLinks.map(a => a.dataset.target);
+  const sections = sectionIds.map(id => document.getElementById(id)).filter(Boolean);
+  const totalSections = sections.length;
+  const progressFill = document.getElementById('progressFill');
+  const progressLabel = document.getElementById('progressLabel');
+  const seen = new Set();
+
+  function updateProgress(){
+    const pct = Math.round((seen.size / totalSections) * 100);
+    progressFill.style.width = pct + '%';
+    progressLabel.textContent = seen.size + ' / ' + totalSections + ' sections read';
+  }
+
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      const id = entry.target.id;
+      const link = navLinks.find(a => a.dataset.target === id);
+      if(!link) return;
+      if(entry.isIntersecting){ navLinks.forEach(a => a.classList.remove('active')); link.classList.add('active'); }
+      if(entry.boundingClientRect.top < window.innerHeight * 0.5 && !seen.has(id)){
+        seen.add(id); link.classList.add('done'); updateProgress();
+      }
+    });
+  }, { threshold: [0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1], rootMargin: '-10% 0px -40% 0px' });
+
+  sections.forEach(s => observer.observe(s));
+  updateProgress();
+
+  // Fallback safety net: a plain scroll listener that marks anything the
+  // observer might have skipped over during a very fast scroll/flick,
+  // so the "done" state never gets permanently stuck below 100%.
+  function scrollFallbackCheck(){
+    sections.forEach(sec => {
+      const id = sec.id;
+      if(seen.has(id)) return;
+      const rect = sec.getBoundingClientRect();
+      // Only requires the section's top edge to have crossed the middle
+      // of the viewport — deliberately NOT requiring rect.bottom > 0, so
+      // a fast scroll/jump that skips a short section entirely in one
+      // step still correctly marks it as passed rather than getting stuck.
+      if(rect.top < window.innerHeight * 0.5){
+        seen.add(id);
+        const link = navLinks.find(a => a.dataset.target === id);
+        if(link) link.classList.add('done');
+        updateProgress();
+      }
+    });
+  }
+  window.addEventListener('scroll', scrollFallbackCheck, { passive: true });
+  window.addEventListener('resize', scrollFallbackCheck, { passive: true });
+  // Also sweep once on load, in case the page opens already mid-scroll
+  // (e.g. via a deep link or browser scroll restoration), and keep a
+  // light periodic safety net so the tracker can never get permanently
+  // stuck below 100% regardless of how the browser batches scroll events.
+  scrollFallbackCheck();
+  setInterval(scrollFallbackCheck, 1000);
+</script>
+
+</body>
+</html>
