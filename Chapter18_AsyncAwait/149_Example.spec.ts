@@ -1,3 +1,4 @@
+// @ts-expect-error Playwright types may not be available in this standalone example.
 import { test, expect } from '@playwright/test';
 
 test('uses await in a Playwright test', async ({ page }) => {
