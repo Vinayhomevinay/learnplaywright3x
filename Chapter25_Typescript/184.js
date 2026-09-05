@@ -1,6 +1,6 @@
 "use strict";
-let testName1 = "Login test";
-function add_ts(a, b) {
+let testName1A = "Login test";
+function add_tsA(a, b) {
     return a + b;
 }
-console.log(testName1);
+console.log(testName1A);
