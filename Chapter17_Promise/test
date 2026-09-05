@@ -1,4 +1,6 @@
-sayHi();
+
 const sayHi = function() {
   console.log("Hi");
 };
+
+sayHi();

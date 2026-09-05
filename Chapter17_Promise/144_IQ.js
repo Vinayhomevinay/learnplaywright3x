@@ -1,20 +1,20 @@
-// let p = new Promise(function (resolve, reject) {
-//     resolve(42);
-// });
+//  let p = new Promise(function (resolve, reject) {
+//      resolve(42);
+//  });
 
-// p.then(function (value) {
-//     console.log("Answer:", value);
-// });
+//  p.then(function (value) {
+//      console.log("Answer:", value);
+//  });
 
-// let p = new Promise(function (resolve, reject) {
+//  let p = new Promise(function (resolve, reject) {
 //     reject("Something broke");
-// });
+//  });
 
-// p.catch(function (err) {
-//     console.log("Caught:", err);
-// });
+//  p.catch(function (err) {
+//      console.log("Caught:", err);
+//  });
 
-// let p = Promise.resolve(5);
+//  let p = Promise.resolve(5);
 
 // p.then(function (val) {
 //     return val * 10;
