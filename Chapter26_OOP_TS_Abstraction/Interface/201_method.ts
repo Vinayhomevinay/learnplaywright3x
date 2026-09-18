@@ -15,6 +15,7 @@ const calc2: Calculator = {
 
 calc.add(3,4);
 
+
 interface India{
     standUpNationalAnthem(a:string):string;
 }
