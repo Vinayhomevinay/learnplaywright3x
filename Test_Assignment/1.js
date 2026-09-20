@@ -21,7 +21,7 @@ function normalizeJsBasicsLabel(label)
     const final = valueafter
     .replace(/-+/g, "-")        // collapse repeated hyphens into one
 .replace(/^-|-$/g, "");     // remove a hyphen at the start or end
-        console.log(final);
+        //console.log(final);
 
 return final; 
 }
