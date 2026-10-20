@@ -28,3 +28,7 @@ class UITest extends BaseTest {
         console.log("  GIVE LOAN");
     }
 }
+
+let vin = new UITest("logintest");
+
+console.log(vin.execute());

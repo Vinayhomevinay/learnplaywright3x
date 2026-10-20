@@ -6,7 +6,7 @@
 // // getString(123);
 
 function getFirstResult<T>(result:T[]):T{
-    return result[0]!; // ! = non null assertion operator
+    return result[2]!; // ! = non null assertion operator
 }
 
 let firstNumber = getFirstResult<number>([200, 400, 500]);
